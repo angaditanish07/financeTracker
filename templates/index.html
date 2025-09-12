@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}FinanceTracker - Track Your Money{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card text-center mb-5">
+            <div class="card-body py-5">
+                <h1 class="display-4 fw-bold text-primary mb-4">
+                    <i class="fas fa-wallet me-3"></i>Take Control of Your Finances
+                </h1>
+                <p class="lead mb-4">
+                    Track income and expenses, set budgets and goals, and visualize your spending to save more every month.
+                </p>
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-rocket me-2"></i>Get Started Free
+                    </a>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <i class="fas fa-chart-pie fa-3x text-primary"></i>
+                        </div>
+                        <h5 class="card-title">Smart Analytics</h5>
+                        <p class="card-text">
+                            Visualize spending trends and savings growth with interactive charts.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <i class="fas fa-bullseye fa-3x text-warning"></i>
+                        </div>
+                        <h5 class="card-title">Budgets & Goals</h5>
+                        <p class="card-text">
+                            Create budgets and savings goals, and monitor progress easily.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <i class="fas fa-lightbulb fa-3x text-info"></i>
+                        </div>
+                        <h5 class="card-title">Smart Insights</h5>
+                        <p class="card-text">
+                            Get personalized insights like where you're overspending this month.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-5">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="fas fa-play-circle me-2"></i>How It Works</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 text-center mb-3">
+                        <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <span class="h3 text-primary">1</span>
+                        </div>
+                        <h6>Add Transactions</h6>
+                        <p class="small">Record income and expenses with categories and notes.</p>
+                    </div>
+                    <div class="col-md-3 text-center mb-3">
+                        <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <span class="h3 text-primary">2</span>
+                        </div>
+                        <h6>Build Budgets</h6>
+                        <p class="small">Create monthly or weekly budgets per category.</p>
+                    </div>
+                    <div class="col-md-3 text-center mb-3">
+                        <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <span class="h3 text-primary">3</span>
+                        </div>
+                        <h6>Track Trends</h6>
+                        <p class="small">See spending trends and savings growth over time.</p>
+                    </div>
+                    <div class="col-md-3 text-center mb-3">
+                        <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <span class="h3 text-primary">4</span>
+                        </div>
+                        <h6>Act on Insights</h6>
+                        <p class="small">Use insights to cut overspending and hit your goals.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+
+        <div class="card text-center">
+            <div class="card-body py-5">
+                <h3 class="mb-4">Ready to Master Your Money?</h3>
+                <p class="lead mb-4">
+                    Join thousands of people taking control of their finances today.
+                </p>
+                <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-user-plus me-2"></i>Create Your Account
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

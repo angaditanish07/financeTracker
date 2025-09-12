@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - FinanceTracker{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-user me-2"></i>Your Profile</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Username</label>
+                        <input type="text" class="form-control" value="{{ current_user.username }}" disabled>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" value="{{ current_user.email }}" disabled>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Currency</label>
+                        <input type="text" class="form-control" value="{{ current_user.currency_code or 'INR' }}" disabled>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Month Start Day</label>
+                        <input type="text" class="form-control" value="{{ current_user.month_start_day or 1 }}" disabled>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="form-label">Member since</label>
+                        <input type="text" class="form-control" value="{{ current_user.created_at.strftime('%Y-%m-%d') if current_user.created_at else '' }}" disabled>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <a href="{{ url_for('settings') }}" class="btn btn-primary">
+                        <i class="fas fa-cog me-2"></i>Edit Settings
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

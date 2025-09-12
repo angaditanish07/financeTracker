@@ -1,0 +1,562 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - FinanceTracker{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h2 class="mb-2">Welcome back, {{ current_user.username }}! 💸</h2>
+                        <p class="text-muted mb-0">Track your finances, stick to budgets, and grow your savings.</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="d-flex align-items-center justify-content-end">
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#transactionModal">
+                                <i class="fas fa-plus me-2"></i>Add Transaction
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="eco-stat">
+            <h3 id="currentBalance">0</h3>
+            <p>Current Balance</p>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="eco-stat">
+            <h3 id="todaySpend">0</h3>
+            <p>Today's Spend</p>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="eco-stat">
+            <h3 id="monthIncome">0</h3>
+            <p>Income (Month)</p>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="eco-stat">
+            <h3 id="monthExpense">0</h3>
+            <p>Expenses (Month)</p>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-lg-8 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Spending Trends</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="trendChart" height="100"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Expense Categories</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="categoryChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-lg-8 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-list me-2"></i>Recent Transactions</h5>
+                <button class="btn btn-sm btn-outline-primary" onclick="loadTransactions()">
+                    <i class="fas fa-sync-alt me-1"></i>Refresh
+                </button>
+            </div>
+            <div class="card-body">
+                <div id="activitiesList">
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
+                        <p>Loading transactions...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Insights</h5>
+            </div>
+            <div class="card-body">
+                <div id="recommendationsList">
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
+                        <p>Loading recommendations...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Optional panels removed for finance MVP -->
+
+<!-- Eco facts removed for finance context -->
+
+<div class="modal fade" id="transactionModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-plus me-2"></i>Add Transaction</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="transactionForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="type" class="form-label">Type</label>
+                            <select class="form-select" id="type" required>
+                                <option value="">Select type...</option>
+                                <option value="income">Income</option>
+                                <option value="expense">Expense</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="category" class="form-label">Category</label>
+                            <select class="form-select" id="category" required>
+                                <option value="">Select category...</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="amount" class="form-label">Amount</label>
+                            <input type="number" class="form-control" id="amount" step="0.01" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="date" class="form-label">Date</label>
+                            <input type="date" class="form-control" id="date">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Notes (Optional)</label>
+                        <textarea class="form-control" id="description" rows="3" placeholder="Add any additional details..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="submitTransaction()">
+                    <i class="fas fa-save me-2"></i>Add Transaction
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<button class="floating-action-btn" data-bs-toggle="modal" data-bs-target="#transactionModal">
+    <i class="fas fa-plus"></i>
+</button>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const activityOptions = {
+    transport: [
+        { type: 'car', unit: 'km' },
+        { type: 'bus', unit: 'km' },
+        { type: 'train', unit: 'km' },
+        { type: 'plane', unit: 'km' },
+        { type: 'bike', unit: 'km' },
+        { type: 'walk', unit: 'km' }
+    ],
+    electricity: [
+        { type: 'kwh', unit: 'kWh' }
+    ],
+    food: [
+        { type: 'beef', unit: 'kg' },
+        { type: 'chicken', unit: 'kg' },
+        { type: 'fish', unit: 'kg' },
+        { type: 'vegetables', unit: 'kg' },
+        { type: 'fruits', unit: 'kg' },
+        { type: 'dairy', unit: 'kg' }
+    ],
+    waste: [
+        { type: 'kg', unit: 'kg' }
+    ]
+};
+
+const carbonFactors = {
+    transport: {
+        car: 0.2,
+        bus: 0.05,
+        train: 0.04,
+        plane: 0.25,
+        bike: 0.0,
+        walk: 0.0
+    },
+    electricity: {
+        kwh: 0.5
+    },
+    food: {
+        beef: 13.3,
+        chicken: 2.9,
+        fish: 3.0,
+        vegetables: 0.2,
+        fruits: 0.3,
+        dairy: 1.4
+    },
+    waste: {
+        kg: 0.5
+    }
+};
+
+let trendChart, categoryChart;
+let dashboardData = {};
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadDashboardData();
+    loadTransactions();
+    loadInsights();
+    fetchCategories();
+    setupTransactionForm();
+});
+
+async function loadDashboardData() {
+    try {
+        const response = await fetch('/api/dashboard-data?t=' + Date.now());
+        dashboardData = await response.json();
+        
+        updateStats();
+        createTrendChart();
+        createCategoryChart();
+        loadOffsetCalculator();
+    } catch (error) {
+        console.error('Error loading dashboard data:', error);
+    }
+}
+
+function updateStats() {
+    document.getElementById('currentBalance').textContent = formatCurrency(dashboardData.kpis.current_balance, dashboardData.kpis.currency);
+    document.getElementById('monthIncome').textContent = formatCurrency(dashboardData.kpis.month_income, dashboardData.kpis.currency);
+    document.getElementById('monthExpense').textContent = formatCurrency(dashboardData.kpis.month_expense, dashboardData.kpis.currency);
+    const today = new Date().toISOString().split('T')[0];
+    const todaySpend = dashboardData.daily_data[today] || 0;
+    document.getElementById('todaySpend').textContent = formatCurrency(todaySpend, dashboardData.kpis.currency);
+}
+
+function createTrendChart() {
+    const ctx = document.getElementById('trendChart').getContext('2d');
+    
+    const labels = Object.keys(dashboardData.daily_data || {}).sort();
+    const data = labels.map(date => dashboardData.daily_data[date]);
+    
+    if (trendChart) {
+        trendChart.destroy();
+    }
+    
+    trendChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Daily Expenses',
+                data: data,
+                borderColor: '#2ecc71',
+                backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: dashboardData.kpis.currency
+                    }
+                }
+            }
+        }
+    });
+}
+
+function createCategoryChart() {
+    const ctx = document.getElementById('categoryChart').getContext('2d');
+    
+    const categories = Object.keys(dashboardData.category_data || {});
+    const data = Object.values(dashboardData.category_data || {});
+    const colors = ['#2ecc71', '#3498db', '#f39c12', '#e74c3c', '#9b59b6', '#1abc9c'];
+    
+    if (categoryChart) {
+        categoryChart.destroy();
+    }
+    
+    categoryChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: categories,
+            datasets: [{
+                data: data,
+                backgroundColor: colors.slice(0, categories.length),
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+
+async function loadTransactions() {
+    try {
+        const response = await fetch('/api/transactions');
+        const activities = await response.json();
+        
+        const activitiesList = document.getElementById('activitiesList');
+        
+        if (activities.length === 0) {
+            activitiesList.innerHTML = `
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-clipboard-list fa-3x mb-3"></i>
+                    <p>No transactions yet.</p>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#transactionModal">
+                        <i class="fas fa-plus me-2"></i>Add Your First Transaction
+                    </button>
+                </div>
+            `;
+            return;
+        }
+        
+        activitiesList.innerHTML = activities.map(activity => `
+            <div class="activity-card card mb-3">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h6 class="mb-1">${activity.category || 'Uncategorized'}</h6>
+                            <p class="text-muted mb-0">${activity.description || ''}</p>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <span class="badge ${activity.type === 'income' ? 'bg-success' : 'bg-primary'}">${activity.type === 'income' ? '+' : '-'}${formatCurrency(Math.abs(activity.amount), dashboardData.kpis.currency)}</span>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <small class="text-muted">${formatDate(activity.date)}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    } catch (error) {
+        console.error('Error loading transactions:', error);
+    }
+}
+
+async function loadInsights() {
+    try {
+        const response = await fetch('/api/recommendations');
+        const recommendations = await response.json();
+        
+        const recommendationsList = document.getElementById('recommendationsList');
+        
+        recommendationsList.innerHTML = recommendations.map(rec => `
+            <div class="recommendation-card card mb-3">
+                <div class="card-body">
+                    <h6 class="card-title">${rec.title}</h6>
+                    <p class="card-text small">${rec.content}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-warning">${rec.category}</span>
+                        <small class="text-muted">Impact: ${Math.round(rec.impact_score * 100)}%</small>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    } catch (error) {
+        console.error('Error loading insights:', error);
+    }
+}
+
+async function loadBadges() {
+    try {
+        const response = await fetch('/api/badges');
+        const badges = await response.json();
+        
+        const badgesList = document.getElementById('badgesList');
+        
+        if (badges.length === 0) {
+            badgesList.innerHTML = `
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-trophy fa-3x mb-3"></i>
+                    <p>No badges earned yet.</p>
+                    <small>Start logging activities to earn badges!</small>
+                </div>
+            `;
+            return;
+        }
+        
+        badgesList.innerHTML = badges.map(badge => `
+            <div class="text-center mb-3">
+                <div class="mb-2">
+                    <span style="font-size: 2rem;">${badge.icon}</span>
+                </div>
+                <h6 class="mb-1">${badge.name}</h6>
+                <p class="small text-muted mb-1">${badge.description}</p>
+                <small class="text-muted">Earned: ${formatDate(badge.earned_at)}</small>
+            </div>
+        `).join('');
+    } catch (error) {
+        console.error('Error loading badges:', error);
+    }
+}
+
+async function loadLeaderboard() {
+    try {
+        const response = await fetch('/api/leaderboard');
+        const leaderboard = await response.json();
+        
+        const leaderboardList = document.getElementById('leaderboardList');
+        
+        leaderboardList.innerHTML = leaderboard.map((user, index) => `
+            <div class="leaderboard-item ${index < 3 ? `rank-${index + 1}` : ''}">
+                <div>
+                    <strong>${index + 1}. ${user.username}</strong>
+                    <br>
+                    <small class="text-muted">${formatNumber(user.total_footprint)} kg CO₂</small>
+                </div>
+                <div class="text-end">
+                    <span class="badge bg-success">${user.streak_days} day streak</span>
+                </div>
+            </div>
+        `).join('');
+    } catch (error) {
+        console.error('Error loading leaderboard:', error);
+    }
+}
+
+// removed
+
+function setupTransactionForm() {
+    const typeSelect = document.getElementById('type');
+    const categorySelect = document.getElementById('category');
+
+    async function ensureCategories() {
+        if (!Array.isArray(categories) || categories.length === 0) {
+            await fetchCategories();
+        }
+    }
+
+    function populateCategories() {
+        const t = typeSelect.value;
+        categorySelect.innerHTML = '<option value="">Select category...</option>';
+        (categories || []).filter(c => c.type === t).forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c.id;
+            opt.textContent = c.name;
+            categorySelect.appendChild(opt);
+        });
+    }
+
+    typeSelect.addEventListener('change', async function() {
+        await ensureCategories();
+        populateCategories();
+    });
+}
+
+function updateCarbonEstimate() {
+    const category = document.getElementById('category').value;
+    const activityType = document.getElementById('activityType').value;
+    const value = parseFloat(document.getElementById('value').value) || 0;
+    
+    if (category && activityType && carbonFactors[category] && carbonFactors[category][activityType]) {
+        const estimate = value * carbonFactors[category][activityType];
+        document.getElementById('carbonEstimate').textContent = formatNumber(estimate);
+        document.getElementById('carbonPreview').style.display = 'block';
+    } else {
+        document.getElementById('carbonPreview').style.display = 'none';
+    }
+}
+
+async function submitTransaction() {
+    const formData = {
+        type: document.getElementById('type').value,
+        category_id: document.getElementById('category').value,
+        amount: document.getElementById('amount').value,
+        date: document.getElementById('date').value,
+        description: document.getElementById('description').value
+    };
+    
+    if (!formData.type || !formData.category_id || !formData.amount) {
+        showAlert('Please fill in type, category and amount.', 'danger');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/transactions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+        const data = await response.json();
+        if (response.ok) {
+            showAlert('Transaction added successfully!', 'success');
+            const modal = bootstrap.Modal.getInstance(document.getElementById('transactionModal'));
+            modal.hide();
+            document.getElementById('transactionForm').reset();
+            loadDashboardData();
+            loadTransactions();
+            loadInsights();
+        } else {
+            showAlert(data.error || 'Failed to add transaction.', 'danger');
+        }
+    } catch (error) {
+        showAlert('An error occurred. Please try again.', 'danger');
+    }
+}
+
+async function fetchCategories() {
+    try {
+        const res = await fetch('/api/categories');
+        categories = await res.json();
+    } catch (e) {
+        categories = [];
+    }
+}
+
+function formatCurrency(value, currency) {
+    try {
+        return new Intl.NumberFormat(undefined, { style: 'currency', currency: currency || 'USD' }).format(value || 0);
+    } catch (e) {
+        return `${currency || 'USD'} ${formatNumber(value || 0)}`;
+    }
+}
+</script>
+{% endblock %}
