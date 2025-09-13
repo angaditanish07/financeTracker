@@ -20,7 +20,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key-here'
 mongo_url = os.getenv('MONGODB_URL')
 mongo_client = MongoClient(mongo_url)
-db = mongo_client.get_database() 
+db = mongo_client['finance_tracker']
 
 # MongoDB collections
 users_collection = db.users
