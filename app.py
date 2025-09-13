@@ -18,7 +18,7 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key-here'
-mongo_url = 'mongodb+srv://tanishangadi27_db_user:tanish%401234@tanish27.qqt4ite.mongodb.net/finance_tracker?retryWrites=true&w=majority'
+mongo_url = os.getenv('MONGODB_URL')
 mongo_client = MongoClient(mongo_url)
 db = mongo_client.get_database() 
 
