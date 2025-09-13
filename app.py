@@ -103,6 +103,15 @@ CARBON_FACTORS = {
 @app.route('/')
 def index():
     return render_template('index.html')
+    
+@app.route('/test-db')
+def test_db():
+    try:
+        count = db.users.count_documents({})
+        return f"Connected! Users count: {count}"
+    except Exception as e:
+        return f"Database error: {str(e)}"
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
